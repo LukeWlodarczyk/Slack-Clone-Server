@@ -12,7 +12,7 @@ server.applyMiddleware({ app });
 
 const port = process.env.PORT || 5000;
 
-models.sequelize.sync().then(() => {
+models.sequelize.sync({ force: true }).then(() => {
 	app.listen(port, () => {
 		console.log(
 			`Server is ready at http://localhost:5000${server.graphqlPath}`
