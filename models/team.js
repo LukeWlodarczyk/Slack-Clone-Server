@@ -2,7 +2,10 @@ export default (sequelize, DataTypes) => {
 	const Team = sequelize.define('team', {
 		name: {
 			type: DataTypes.STRING,
-			unique: true,
+			unique: {
+				args: true,
+				msg: 'Team name is already in use',
+			},
 		},
 	});
 
