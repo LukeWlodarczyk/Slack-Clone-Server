@@ -30,8 +30,8 @@ export const refreshTokens = async (
 	token,
 	refreshToken,
 	models,
-	SECRET,
-	SECRET2
+	secret,
+	secret2
 ) => {
 	let userId = 0;
 	try {
@@ -53,7 +53,7 @@ export const refreshTokens = async (
 		return {};
 	}
 
-	const refreshSecret = user.password + SECRET2;
+	const refreshSecret = user.password + secret2;
 
 	try {
 		jwt.verify(refreshToken, refreshSecret);
@@ -63,7 +63,7 @@ export const refreshTokens = async (
 
 	const [newToken, newRefreshToken] = await createTokens(
 		user,
-		SECRET,
+		secret,
 		refreshSecret
 	);
 	return {
@@ -73,7 +73,7 @@ export const refreshTokens = async (
 	};
 };
 
-export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
+export const tryLogin = async (email, password, models, secret, secret2) => {
 	const user = await models.User.findOne({ where: { email }, raw: true });
 	if (!user) {
 		return {
@@ -90,11 +90,11 @@ export const tryLogin = async (email, password, models, SECRET, SECRET2) => {
 		};
 	}
 
-	const refreshTokenSecret = user.password + SECRET2;
+	const refreshTokenSecret = user.password + secret2;
 
 	const [token, refreshToken] = await createTokens(
 		user,
-		SECRET,
+		secret,
 		refreshTokenSecret
 	);
 
