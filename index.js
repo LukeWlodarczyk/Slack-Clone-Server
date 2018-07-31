@@ -11,10 +11,13 @@ const resolvers = mergeResolvers(
 	fileLoader(path.join(__dirname, './resolvers'))
 );
 
+const SECRET = 'ikjhgr36erfasdgafafgsdf';
+const SECRET2 = 'asdfa234dLKasdL22434ADasdaNS';
+
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: { models, user: { id: 1 } },
+	context: { models, user: { id: 1 }, SECRET, SECRET2 },
 });
 
 const app = express();
