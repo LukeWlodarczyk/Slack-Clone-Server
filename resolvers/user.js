@@ -1,14 +1,5 @@
-import _ from 'lodash';
 import { tryLogin } from '../helpers/auth';
-
-const formatErrors = (e, models) => {
-	if (e instanceof models.sequelize.ValidationError) {
-		//  _.pick({a: 1, b: 2}, 'a') => {a: 1}
-		return e.errors.map(x => _.pick(x, ['path', 'message']));
-	}
-
-	return [{ path: 'ServerError', message: 'Something went wrong' }];
-};
+import { formatErrors } from '../helpers/formatErrors';
 
 export default {
 	Query: {
@@ -31,7 +22,7 @@ export default {
 				};
 			}
 		},
-		login: (parent, { email, password }, { models, SECRET, SECRET2 }) =>
-			tryLogin(email, password, models, SECRET, SECRET2),
+		login: (parent, { email, password }, { models, secret, refreshSecret }) =>
+			tryLogin(email, password, models, secret, refreshSecret),
 	},
 };

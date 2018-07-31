@@ -4,6 +4,9 @@ import path from 'path';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 
 import models from './models';
+import { secret, refreshSecret } from './config/keys';
+
+import authorizeUser from './middlewares/authorizeUser';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 
@@ -11,16 +14,16 @@ const resolvers = mergeResolvers(
 	fileLoader(path.join(__dirname, './resolvers'))
 );
 
-const SECRET = 'ikjhgr36erfasdgafafgsdf';
-const SECRET2 = 'asdfa234dLKasdL22434ADasdaNS';
+const app = express();
+
+app.use(authorizeUser(secret, models));
 
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: { models, user: { id: 1 }, SECRET, SECRET2 },
+	context: ({ req }) => ({ models, user: req.user, secret, refreshSecret }),
 });
 
-const app = express();
 server.applyMiddleware({ app });
 
 const port = process.env.PORT || 5000;
