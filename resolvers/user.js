@@ -1,4 +1,13 @@
-import bcrypt from 'bcrypt';
+import _ from 'lodash';
+
+const formatErrors = (e, models) => {
+	if (e instanceof models.sequelize.ValidationError) {
+		//  _.pick({a: 1, b: 2}, 'a') => {a: 1}
+		return e.errors.map(x => _.pick(x, ['path', 'message']));
+	}
+
+	return [{ path: 'ServerError', message: 'Something went wrong' }];
+};
 
 export default {
 	Query: {
@@ -7,13 +16,18 @@ export default {
 		allUsers: async (parent, args, { models }) => models.User.findAll(),
 	},
 	Mutation: {
-		register: async (parent, { password, ...args }, { models }) => {
+		register: async (parent, args, { models }) => {
 			try {
-				const hash = await bcrypt.hash(password, 10);
-				await models.User.create({ ...args, password: hash });
-				return true;
-			} catch (e) {
-				return false;
+				const user = await models.User.create(args);
+				return {
+					success: true,
+					user,
+				};
+			} catch (err) {
+				return {
+					success: false,
+					errors: formatErrors(err, models),
+				};
 			}
 		},
 	},
