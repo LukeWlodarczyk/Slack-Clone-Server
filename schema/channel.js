@@ -1,7 +1,8 @@
 export default `
   type Channel {
     id: ID!
-    names: String!
+    name: String!
+    public: Boolean!
     messages: [Message!]!
     users: [User!]!
   }
