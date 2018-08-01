@@ -16,7 +16,7 @@ const resolvers = mergeResolvers(
 
 const app = express();
 
-app.use(authorizeUser(secret, models));
+app.use(authorizeUser(secret, refreshSecret, models));
 
 const server = new ApolloServer({
 	typeDefs,
