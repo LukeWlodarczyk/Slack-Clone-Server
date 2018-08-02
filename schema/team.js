@@ -19,7 +19,8 @@ export default `
   }
 
   type Query {
-    allTeams: [Team!]!
+    myTeamsAsOwner: [Team!]!
+    myTeamsAsMember: [Team!]!
   }
 
   type Mutation {

@@ -3,12 +3,19 @@ import { requiresAuth } from '../helpers/permissions';
 
 export default {
 	Query: {
-		allTeams: requiresAuth.createResolver(
+		myTeamsAsOwner: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
 				return await models.Team.findAll({
 					where: {
 						owner: user.id,
 					},
+				});
+			}
+		),
+		myTeamsAsMember: requiresAuth.createResolver(
+			async (parent, args, { models, user }) => {
+				return await models.Team.findAll({
+					include: [{ model: models.User, where: { id: user.id } }],
 				});
 			}
 		),
@@ -61,7 +68,7 @@ export default {
 								{
 									path: 'email',
 									message:
-										'You cannot add members to the team (You are not the team owner)',
+										'You cannot add members to the team. (You are not the team owner)',
 								},
 							],
 						};
