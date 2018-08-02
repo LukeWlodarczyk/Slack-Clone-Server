@@ -6,6 +6,12 @@ export default (sequelize, DataTypes) => {
 				args: true,
 				msg: 'Team name is already in use',
 			},
+			validate: {
+				len: {
+					args: [3, 16],
+					msg: 'The team name needs to be between 3 and 16 characters long',
+				},
+			},
 		},
 	});
 

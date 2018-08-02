@@ -1,13 +1,18 @@
+import { formatErrors } from '../helpers/formatErrors';
+import { requiresAuth } from '../helpers/permissions';
+
 export default {
 	Mutation: {
-		createChannel: async (parent, args, { models }) => {
-			try {
-				await models.Channel.create(args);
-				return true;
-			} catch (e) {
-				console.log(e);
-				return false;
+		createChannel: requiresAuth.createResolver(
+			async (parent, args, { models }) => {
+				try {
+					const channel = await models.Channel.create(args);
+
+					return { success: true, channel };
+				} catch (err) {
+					return { success: false, errors: formatErrors(err, models) };
+				}
 			}
-		},
+		),
 	},
 };
