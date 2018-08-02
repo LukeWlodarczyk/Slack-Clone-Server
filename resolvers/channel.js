@@ -4,8 +4,23 @@ import { requiresAuth } from '../helpers/permissions';
 export default {
 	Mutation: {
 		createChannel: requiresAuth.createResolver(
-			async (parent, args, { models }) => {
+			async (parent, args, { models, user }) => {
 				try {
+					const team = await models.Team.findAll({
+						where: { id: args.teamId },
+					});
+					if (team.owner !== user.id) {
+						return {
+							success: false,
+							errors: [
+								{
+									path: 'name',
+									message:
+										'You cannot create channel in this team (You are not the team owner)',
+								},
+							],
+						};
+					}
 					const channel = await models.Channel.create(args);
 
 					return { success: true, channel };
