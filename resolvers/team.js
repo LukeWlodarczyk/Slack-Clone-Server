@@ -14,9 +14,13 @@ export default {
 		),
 		myTeamsAsMember: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
-				return await models.Team.findAll({
-					include: [{ model: models.User, where: { id: user.id } }],
-				});
+				return await models.sequelize.query(
+					'select * from teams join members on id = team_id where user_id = ?',
+					{
+						replacements: [user.id],
+						model: models.Team,
+					}
+				);
 			}
 		),
 	},
@@ -106,5 +110,7 @@ export default {
 					teamId: id,
 				},
 			}),
+		owner: ({ owner }, args, { models }) =>
+			models.User.findOne({ where: { id: owner } }),
 	},
 };
