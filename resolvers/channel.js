@@ -6,9 +6,10 @@ export default {
 		createChannel: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
 				try {
-					const team = await models.Team.findAll({
+					const team = await models.Team.findOne({
 						where: { id: args.teamId },
 					});
+
 					if (team.owner !== user.id) {
 						return {
 							success: false,

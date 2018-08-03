@@ -90,6 +90,19 @@ export default {
 						};
 					}
 
+					if (team.owner === userToAdd.id) {
+						return {
+							success: false,
+							errors: [
+								{
+									path: 'email',
+									message:
+										'You cannot add yourself as a member to your own team',
+								},
+							],
+						};
+					}
+
 					await models.Member.create({ userId: userToAdd.id, teamId });
 					return {
 						success: true,
