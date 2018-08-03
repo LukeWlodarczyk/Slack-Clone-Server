@@ -6,6 +6,7 @@ export default {
 		channelMessages: requiresAuth.createResolver(
 			async (parent, args, { models }) =>
 				await models.Message.findAll({
+					order: [['created_at', 'ASC']],
 					where: { channelId: args.channelId },
 				})
 		),
