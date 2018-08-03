@@ -2,6 +2,7 @@ import express from 'express';
 import { ApolloServer, gql, graphiqlExpress } from 'apollo-server-express';
 import path from 'path';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
+import { createServer } from 'http';
 
 import models from './models';
 import { secret, refreshSecret } from './config/keys';
@@ -26,12 +27,19 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app });
 
-const port = process.env.PORT || 5000;
+const httpServer = createServer(app);
+
+server.installSubscriptionHandlers(httpServer);
+
+const PORT = process.env.PORT || 5000;
 
 models.sequelize.sync().then(() => {
-	app.listen(port, () => {
+	httpServer.listen(PORT, () => {
 		console.log(
-			`Server is ready at http://localhost:5000${server.graphqlPath}`
+			`Server ready at http://localhost:${PORT}${server.graphqlPath}`
+		);
+		console.log(
+			`Subscriptions ready at ws://localhost:${PORT}${server.subscriptionsPath}`
 		);
 	});
 });
