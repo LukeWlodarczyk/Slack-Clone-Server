@@ -7,7 +7,7 @@ import { createServer } from 'http';
 import models from './models';
 import { secret, refreshSecret } from './config/keys';
 
-import authorizeUser from './middlewares/authorizeUser';
+import authorizeUser, { authorizeUserWs } from './middlewares/authorizeUser';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 
@@ -22,7 +22,37 @@ app.use(authorizeUser(secret, refreshSecret, models));
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: ({ req }) => ({ models, user: req.user, secret, refreshSecret }),
+	context: ({ req, connection }) => {
+		if (connection) {
+			return {
+				...connection.context,
+			};
+		}
+
+		return {
+			models,
+			user: req.user,
+			secret,
+			refreshSecret,
+		};
+	},
+	subscriptions: {
+		onConnect: async (connectionParams, webSocket) => {
+			const { user } = await authorizeUserWs(
+				connectionParams,
+				secret,
+				refreshSecret,
+				models
+			);
+
+			return {
+				user,
+				models,
+				secret,
+				refreshSecret,
+			};
+		},
+	},
 });
 
 server.applyMiddleware({ app });
