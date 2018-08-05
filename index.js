@@ -38,12 +38,20 @@ const server = new ApolloServer({
 	},
 	subscriptions: {
 		onConnect: async (connectionParams, webSocket) => {
+			if (!connectionParams.token || !connectionParams.refreshToken) {
+				throw new Error('Missing auth tokens');
+			}
+
 			const { user } = await authorizeUserWs(
 				connectionParams,
 				secret,
 				refreshSecret,
 				models
 			);
+
+			if (!user.id) {
+				throw new Error('Invalid auth tokens');
+			}
 
 			return {
 				user,
