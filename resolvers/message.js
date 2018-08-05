@@ -1,7 +1,22 @@
 import { formatErrors } from '../helpers/formatErrors';
 import { requiresAuth } from '../helpers/permissions';
+import { PubSub, withFilter } from 'apollo-server-express';
+
+const pubsub = new PubSub();
+
+const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 
 export default {
+	Subscription: {
+		newChannelMessage: {
+			subscribe: withFilter(
+				() => pubsub.asyncIterator(NEW_CHANNEL_MESSAGE),
+				(payload, { channelId }) => {
+					return payload.channelId === channelId;
+				}
+			),
+		},
+	},
 	Query: {
 		channelMessages: requiresAuth.createResolver(
 			async (parent, args, { models }) =>
@@ -23,7 +38,16 @@ export default {
 		createMessage: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
 				try {
-					await models.Message.create({ ...args, userId: user.id });
+					const message = await models.Message.create({
+						...args,
+						userId: user.id,
+					});
+
+					pubsub.publish(NEW_CHANNEL_MESSAGE, {
+						channelId: args.channelId,
+						newChannelMessage: message.dataValues,
+					});
+
 					return {
 						success: true,
 					};

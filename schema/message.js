@@ -12,6 +12,10 @@ export default `
     errors: [Error!]
   }
 
+  type Subscription {
+    newChannelMessage(channelId: ID!): Message!
+  }
+
   type Mutation {
     createMessage(channelId: ID!, text: String!): CreateMessageResponse!
   }
