@@ -15,3 +15,18 @@ export const requiresAuth = createResolver((parent, args, { user }) => {
 		throw new Error('Not authenticated');
 	}
 });
+
+export const requiresTeamAccess = requiresAuth.createResolver(
+	async (parent, { channelId }, { user, models }) => {
+		const channel = await models.Channel.findOne({ where: { id: channelId } });
+		const member = await models.Member.findOne({
+			where: { teamId: channel.teamId, userId: user.id },
+		});
+
+		if (!member) {
+			throw new Error(
+				"You have to be a member of the team to subscribe to it's messages"
+			);
+		}
+	}
+);

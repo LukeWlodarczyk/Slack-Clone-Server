@@ -58,5 +58,7 @@ export const authorizeUserWs = async (
 				user,
 			};
 		}
+	} else {
+		return {};
 	}
 };
