@@ -1,5 +1,5 @@
 import { formatErrors } from '../helpers/formatErrors';
-import { requiresAuth } from '../helpers/permissions';
+import { requiresAuth, requiresTeamAccess } from '../helpers/permissions';
 import { PubSub, withFilter } from 'apollo-server-express';
 
 const pubsub = new PubSub();
@@ -9,11 +9,13 @@ const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 export default {
 	Subscription: {
 		newChannelMessage: {
-			subscribe: withFilter(
-				() => pubsub.asyncIterator(NEW_CHANNEL_MESSAGE),
-				(payload, { channelId }) => {
-					return payload.channelId === channelId;
-				}
+			subscribe: requiresTeamAccess.createResolver(
+				withFilter(
+					() => pubsub.asyncIterator(NEW_CHANNEL_MESSAGE),
+					(payload, { channelId }) => {
+						return payload.channelId === channelId;
+					}
+				)
 			),
 		},
 	},
