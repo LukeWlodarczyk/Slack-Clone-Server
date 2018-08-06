@@ -22,4 +22,8 @@ export default `
     createTeam(name: String!): CreateTeamResponse!
     addTeamMember(email: String!, teamId: ID!): VoidResponse!
   }
+
+  type Query {
+    teamMembers(teamId: ID!): [User!]!
+  }
 `;
