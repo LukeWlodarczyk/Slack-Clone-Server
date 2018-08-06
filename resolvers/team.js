@@ -86,7 +86,11 @@ export default {
 						};
 					}
 
-					if (member.teamId === parseInt(teamId, 10)) {
+					const memberExists = await models.Member.findOne({
+						where: { teamId, userId: userToAdd.id },
+					});
+
+					if (memberExists) {
 						return {
 							success: false,
 							errors: [
@@ -118,5 +122,17 @@ export default {
 					teamId: id,
 				},
 			}),
+		directMessageMembers: ({ id }, args, { models, user }) =>
+			models.sequelize.query(
+				'select distinct on (u.id) u.id, u.username from users as u join direct_messages as dm on (u.id = dm.sender_id) or (u.id = dm.receiver_id) where (:currentUserId = dm.sender_id or :currentUserId = dm.receiver_id) and dm.team_id = :teamId',
+				{
+					replacements: {
+						currentUserId: user.id,
+						teamId: id,
+					},
+					model: models.User,
+					raw: true,
+				}
+			),
 	},
 };
