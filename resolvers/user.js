@@ -1,11 +1,25 @@
 import { tryLogin } from '../helpers/auth';
 import { formatErrors } from '../helpers/formatErrors';
+import { requiresAuth } from '../helpers/permissions';
 
 export default {
+	User: {
+		teams: async ({ id }, args, { models, user }) =>
+			await models.sequelize.query(
+				'select * from teams as team join members as member on team.id = member.team_id where member.user_id = ?',
+				{
+					replacements: [user.id],
+					model: models.Team,
+					raw: true,
+				}
+			),
+	},
 	Query: {
-		getUser: async (parent, { id }, { models }) =>
-			models.User.findOne({ where: { id } }),
 		allUsers: async (parent, args, { models }) => models.User.findAll(),
+		getAuthUser: requiresAuth.createResolver(
+			async (parent, args, { models, user }) =>
+				models.User.findOne({ where: { id: user.id } })
+		),
 	},
 	Mutation: {
 		register: async (parent, args, { models }) => {

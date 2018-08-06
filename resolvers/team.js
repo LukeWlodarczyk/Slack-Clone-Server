@@ -2,38 +2,21 @@ import { formatErrors } from '../helpers/formatErrors';
 import { requiresAuth } from '../helpers/permissions';
 
 export default {
-	Query: {
-		myTeamsAsOwner: requiresAuth.createResolver(
-			async (parent, args, { models, user }) => {
-				return await models.Team.findAll({
-					where: {
-						owner: user.id,
-					},
-				});
-			}
-		),
-		myTeamsAsMember: requiresAuth.createResolver(
-			async (parent, args, { models, user }) => {
-				return await models.sequelize.query(
-					'select * from teams join members on id = team_id where user_id = ?',
-					{
-						replacements: [user.id],
-						model: models.Team,
-					}
-				);
-			}
-		),
-	},
 	Mutation: {
 		createTeam: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
 				try {
 					const team = await models.sequelize.transaction(async () => {
-						const team = await models.Team.create({ ...args, owner: user.id });
+						const team = await models.Team.create({ ...args });
 						await models.Channel.create({
 							name: 'general',
 							public: true,
 							teamId: team.id,
+						});
+						await models.Member.create({
+							teamId: team.id,
+							userId: user.id,
+							admin: true,
 						});
 						return team;
 					});
@@ -53,19 +36,19 @@ export default {
 		addTeamMember: requiresAuth.createResolver(
 			async (parent, { email, teamId }, { models, user }) => {
 				try {
-					const teamPromise = models.Team.findOne({
-						where: { id: teamId },
+					const memberPromise = models.Member.findOne({
+						where: { teamId, userId: user.id },
 					});
 					const userToAddPromise = models.User.findOne({
 						where: { email },
 					});
 
-					const [team, userToAdd] = await Promise.all([
-						teamPromise,
+					const [member, userToAdd] = await Promise.all([
+						memberPromise,
 						userToAddPromise,
 					]);
 
-					if (team.owner !== user.id) {
+					if (!member.admin) {
 						return {
 							success: false,
 							errors: [
@@ -90,14 +73,13 @@ export default {
 						};
 					}
 
-					if (team.owner === userToAdd.id) {
+					if (member.teamId === parseInt(teamId, 10)) {
 						return {
 							success: false,
 							errors: [
 								{
 									path: 'email',
-									message:
-										'You cannot add yourself as a member to your own team',
+									message: 'This user is already a member of this team',
 								},
 							],
 						};
@@ -123,7 +105,5 @@ export default {
 					teamId: id,
 				},
 			}),
-		owner: ({ owner }, args, { models }) =>
-			models.User.findOne({ where: { id: owner } }),
 	},
 };

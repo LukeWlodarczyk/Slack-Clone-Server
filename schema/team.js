@@ -2,7 +2,7 @@ export default `
   type Team {
     id: ID!
     name: String!
-    owner: User!
+    admin: Boolean!
     members: [User!]!
     channels: [Channel!]!
   }
@@ -16,11 +16,6 @@ export default `
   type VoidResponse {
     success: Boolean!
     errors: [Error!]
-  }
-
-  type Query {
-    myTeamsAsOwner: [Team!]!
-    myTeamsAsMember: [Team!]!
   }
 
   type Mutation {
