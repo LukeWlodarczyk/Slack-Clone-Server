@@ -15,6 +15,7 @@ export default `
 
   type VoidResponse {
     success: Boolean!
+    user: User
     errors: [Error!]
   }
 

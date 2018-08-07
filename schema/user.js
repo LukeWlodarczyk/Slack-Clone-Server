@@ -9,6 +9,7 @@ export default `
   type Query {
     getAuthUser: User!
     allUsers: [User!]!
+    getUserById(userId: ID!): User
   }
 
   type RegisterResponse {

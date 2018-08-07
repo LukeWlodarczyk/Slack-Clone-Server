@@ -20,6 +20,8 @@ export default {
 			async (parent, args, { models, user }) =>
 				models.User.findOne({ where: { id: user.id } })
 		),
+		getUserById: async (parent, { userId }, { models, user }) =>
+			models.User.findOne({ where: { id: userId } }),
 	},
 	Mutation: {
 		register: async (parent, args, { models }) => {

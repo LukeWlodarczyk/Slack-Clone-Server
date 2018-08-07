@@ -102,11 +102,19 @@ export default {
 						};
 					}
 
-					await models.Member.create({ userId: userToAdd.id, teamId });
+					await models.Member.create({
+						userId: userToAdd.id,
+						teamId,
+					});
 					return {
 						success: true,
+						user: {
+							username: userToAdd.username,
+							id: userToAdd.id,
+						},
 					};
 				} catch (err) {
+					console.log(err);
 					return {
 						success: false,
 						errors: formatErrors(err, models),
