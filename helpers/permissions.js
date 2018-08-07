@@ -30,3 +30,20 @@ export const requiresTeamAccess = requiresAuth.createResolver(
 		}
 	}
 );
+
+export const requireDirectMessageSubscription = requiresAuth.createResolver(
+	async (parent, { teamId, userId }, { user, models }) => {
+		const members = await models.Member.findAll({
+			where: {
+				teamId,
+				[models.sequelize.Op.or]: [{ userId }, { userId: user.id }],
+			},
+		});
+
+		if (members.length !== 2) {
+			throw new Error(
+				"We couldn't find one of the member of this conversation in db"
+			);
+		}
+	}
+);
