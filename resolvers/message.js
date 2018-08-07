@@ -1,8 +1,8 @@
 import { formatErrors } from '../helpers/formatErrors';
 import { requiresAuth, requiresTeamAccess } from '../helpers/permissions';
-import { PubSub, withFilter } from 'apollo-server-express';
+import { withFilter } from 'apollo-server-express';
 
-const pubsub = new PubSub();
+import pubsub from '../helpers/pubsub';
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
 

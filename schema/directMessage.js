@@ -12,6 +12,9 @@ export default `
     errors: [Error!]
   }
 
+  type Subscription {
+    newDirectMessage(teamId: ID!, userId: ID!): DirectMessage!
+  }
 
   type Mutation {
     createDirectMessage(receiverId: ID!, teamId: ID!, text: String!): CreateDirectMessageResponse!

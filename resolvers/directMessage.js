@@ -1,7 +1,31 @@
 import { formatErrors } from '../helpers/formatErrors';
-import { requiresAuth, requiresTeamAccess } from '../helpers/permissions';
+import {
+	requiresAuth,
+	requiresTeamAccess,
+	requireDirectMessageSubscription,
+} from '../helpers/permissions';
+
+import { withFilter } from 'apollo-server-express';
+import pubsub from '../helpers/pubsub';
+
+const NEW_DIRECT_MESSAGE = 'NEW_DIRECT_MESSAGE';
 
 export default {
+	Subscription: {
+		newDirectMessage: {
+			subscribe: requireDirectMessageSubscription.createResolver(
+				withFilter(
+					() => pubsub.asyncIterator(NEW_DIRECT_MESSAGE),
+					(payload, args, { user }) =>
+						payload.teamId == args.teamId &&
+						((payload.senderId == user.id &&
+							payload.receiverId == args.userId) ||
+							(payload.senderId == args.userId &&
+								payload.receiverId == user.id))
+				)
+			),
+		},
+	},
 	Query: {
 		directMessages: requiresAuth.createResolver(
 			async (parent, { teamId, otherUserId }, { models, user }) =>
@@ -39,10 +63,21 @@ export default {
 		createDirectMessage: requiresAuth.createResolver(
 			async (parent, args, { models, user }) => {
 				try {
-					console.log(args);
 					const directMessage = await models.DirectMessage.create({
 						...args,
 						senderId: user.id,
+					});
+
+					pubsub.publish(NEW_DIRECT_MESSAGE, {
+						teamId: args.teamId,
+						receiverId: args.receiverId,
+						senderId: user.id,
+						newDirectMessage: {
+							...directMessage.dataValues,
+							sender: {
+								username: user.username,
+							},
+						},
 					});
 
 					return {
