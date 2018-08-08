@@ -1,6 +1,8 @@
 import express from 'express';
 import { ApolloServer, gql, graphiqlExpress } from 'apollo-server-express';
+import { apolloUploadExpress } from 'apollo-upload-server';
 import path from 'path';
+import cors from 'cors';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { createServer } from 'http';
 
@@ -17,7 +19,13 @@ const resolvers = mergeResolvers(
 
 const app = express();
 
-app.use(authorizeUser(secret, refreshSecret, models));
+app.use(
+	cors({ origin: 'http://localhost:3000' }),
+	express.json(),
+	authorizeUser(secret, refreshSecret, models)
+);
+
+app.use('/files', express.static('files'));
 
 const server = new ApolloServer({
 	typeDefs,

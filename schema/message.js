@@ -1,10 +1,14 @@
 export default `
+
+
   type Message {
     id: ID!
-    text: String!
+    text: String
     user: User!
     channel: Channel!
     created_at: String!
+    url: String
+    filetype: String
   }
 
   type CreateMessageResponse {
@@ -17,7 +21,7 @@ export default `
   }
 
   type Mutation {
-    createMessage(channelId: ID!, text: String!): CreateMessageResponse!
+    createMessage(channelId: ID!, text: String, file: Upload): CreateMessageResponse!
   }
 
   type Query {
