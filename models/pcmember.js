@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-	const PCMember = sequelize.define('pcMember', {});
+	const PCMember = sequelize.define('pcmember', {});
 
 	return PCMember;
 };

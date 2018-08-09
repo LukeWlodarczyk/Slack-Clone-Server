@@ -23,8 +23,6 @@ export default {
 						};
 					}
 
-					console.log(args);
-
 					const response = await models.sequelize.transaction(
 						async transaction => {
 							const channel = await models.Channel.create(args, {
@@ -34,18 +32,20 @@ export default {
 								const privateMembers = args.privateMembers.filter(
 									m => m !== user.id
 								);
+
 								privateMembers.push(user.id);
-								await models.PCMember.bulkCreate(
-									args.privateMembers.map(m => ({
-										userId: m,
-										channelId: channel.dataValues.id,
-									})),
-									{ transaction }
-								);
+
+								const pcmembers = privateMembers.map(m => ({
+									userId: m,
+									channelId: channel.dataValues.id,
+								}));
+
+								await models.PCMember.bulkCreate(pcmembers, { transaction });
 							}
 							return channel;
 						}
 					);
+
 					return { success: true, channel: response };
 				} catch (err) {
 					console.log(err);

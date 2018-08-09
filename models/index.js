@@ -14,7 +14,7 @@ const models = {
 	Message: sequelize.import('./message'),
 	Team: sequelize.import('./team'),
 	Member: sequelize.import('./member'),
-	PCMember: sequelize.import('./pcMember'),
+	PCMember: sequelize.import('./pcmember'),
 	DirectMessage: sequelize.import('./directMessage'),
 };
 
