@@ -4,18 +4,9 @@ import { withFilter } from 'apollo-server-express';
 import { createWriteStream } from 'fs';
 
 import pubsub from '../helpers/pubsub';
+import { storeUpload } from '../helpers/storeUpload';
 
 const NEW_CHANNEL_MESSAGE = 'NEW_CHANNEL_MESSAGE';
-
-const UPLOAD_ROUTE = `${__dirname}/../files`;
-
-const storeUpload = ({ stream, filename }) =>
-	new Promise((resolve, reject) =>
-		stream
-			.pipe(createWriteStream(`${UPLOAD_ROUTE}/${filename}`))
-			.on('finish', () => resolve())
-			.on('error', reject)
-	);
 
 export default {
 	Subscription: {
