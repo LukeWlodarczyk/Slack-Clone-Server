@@ -14,6 +14,6 @@ export default `
   }
 
   type Mutation {
-    createChannel(teamId: ID!, name: String!, public: Boolean=false): CreateChannelResponse!
+    createChannel(teamId: ID!, name: String!, public: Boolean=false, privateMembers:[ID!]): CreateChannelResponse!
   }
 `;

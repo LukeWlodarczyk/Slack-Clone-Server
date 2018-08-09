@@ -22,10 +22,33 @@ export default {
 							],
 						};
 					}
-					const channel = await models.Channel.create(args);
 
-					return { success: true, channel };
+					console.log(args);
+
+					const response = await models.sequelize.transaction(
+						async transaction => {
+							const channel = await models.Channel.create(args, {
+								transaction,
+							});
+							if (!args.public) {
+								const privateMembers = args.privateMembers.filter(
+									m => m !== user.id
+								);
+								privateMembers.push(user.id);
+								await models.PCMember.bulkCreate(
+									args.privateMembers.map(m => ({
+										userId: m,
+										channelId: channel.dataValues.id,
+									})),
+									{ transaction }
+								);
+							}
+							return channel;
+						}
+					);
+					return { success: true, channel: response };
 				} catch (err) {
+					console.log(err);
 					return { success: false, errors: formatErrors(err, models) };
 				}
 			}
