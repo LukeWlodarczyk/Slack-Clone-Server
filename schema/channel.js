@@ -1,11 +1,11 @@
 export default `
   type Channel {
     id: ID!
-    name: String
+    name: String!
     public: Boolean!
     messages: [Message!]!
     users: [User!]!
-    dm: Boolean
+    dm: Boolean!
   }
 
   type CreateChannelResponse {
@@ -16,6 +16,6 @@ export default `
 
   type Mutation {
     createChannel(teamId: ID!, name: String!, public: Boolean=false, privateMembers:[ID!]=[]): CreateChannelResponse!
-    getOrCreateChannel(teamId: ID!, dmMembers: [ID!]!): CreateChannelResponse!
+    getOrCreateChannel(teamId: ID!, dmMembers: [ID!]!=[]): CreateChannelResponse!
   }
 `;

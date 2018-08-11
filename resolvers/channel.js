@@ -66,7 +66,7 @@ export default {
 					const allDMMembers = [...dmMembers, user.id];
 
 					const [data, result] = await models.sequelize.query(
-						`select c.id from channels as c, pcmembers pc where pc.channel_id = c.id and c.dm = true and c.public = false and c.team_id = ${teamId} group by c.id having array_agg(pc.user_id) @> Array[${allDMMembers.join(
+						`select c.id, c.name, c.dm from channels as c, pcmembers pc where pc.channel_id = c.id and c.dm = true and c.public = false and c.team_id = ${teamId} group by c.id having array_agg(pc.user_id) @> Array[${allDMMembers.join(
 							','
 						)}] and count(pc.user_id) = ${allDMMembers.length};`,
 						{ raw: true }
@@ -88,7 +88,7 @@ export default {
 					const users = await models.User.findAll({
 						where: {
 							id: {
-								[models.sequelize.Op.in]: dmMembers,
+								[models.sequelize.Op.in]: allDMMembers,
 							},
 						},
 					});

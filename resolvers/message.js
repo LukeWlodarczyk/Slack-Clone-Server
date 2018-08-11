@@ -70,8 +70,6 @@ export default {
 						messageData.url = `files/${filename}`;
 					}
 
-					console.log(messageData);
-
 					const message = await models.Message.create({
 						...messageData,
 						userId: user.id,
@@ -86,7 +84,6 @@ export default {
 						success: true,
 					};
 				} catch (err) {
-					console.log(err);
 					return { success: false, errors: formatErrors(err, models) };
 				}
 			}

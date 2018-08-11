@@ -3,7 +3,6 @@ export default `
     id: ID!
     name: String!
     admin: Boolean!
-    directMessageMembers: [User!]!
     channels: [Channel!]!
   }
 
