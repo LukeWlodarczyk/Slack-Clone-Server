@@ -1,11 +1,11 @@
 export default `
   type Channel {
     id: ID!
-    name: String!
+    name: String
     public: Boolean!
     messages: [Message!]!
     users: [User!]!
-    dm: Boolean!
+    dm: Boolean
   }
 
   type CreateChannelResponse {
