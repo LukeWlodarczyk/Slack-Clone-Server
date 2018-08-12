@@ -28,6 +28,7 @@
 		"cors": "^2.8.4",
 		"express": "^4.16.3",
 		"graphql": "^0.13.2",
+		"graphql-redis-subscriptions": "^1.5.0",
 		"jsonwebtoken": "^8.3.0",
 		"merge-graphql-schemas": "^1.5.3",
 		"pg": "^7.4.3",
