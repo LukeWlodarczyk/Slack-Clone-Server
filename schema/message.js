@@ -23,7 +23,7 @@ export default `
   }
 
   type Query {
-    channelMessages(channelId: ID!): [Message!]!
+    channelMessages(channelId: ID!, offset: Int!): [Message!]!
   }
 
 `;
