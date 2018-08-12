@@ -23,7 +23,7 @@ export default {
 	},
 	Query: {
 		channelMessages: requiresAuth.createResolver(
-			async (parent, { channelId, offset }, { models, user }) => {
+			async (parent, { channelId, cursor }, { models, user }) => {
 				const channel = await models.Channel.findOne({
 					raw: true,
 					where: { id: channelId },
@@ -40,18 +40,19 @@ export default {
 					}
 				}
 
-				const messages = await models.Message.findAll(
-					{
-						order: [['created_at', 'DESC']],
-						where: { channelId },
-						limit: 35,
-						offset,
-					},
-					{ raw: true }
-				);
+				const opts = {
+					order: [['created_at', 'DESC']],
+					where: { channelId },
+					limit: 35,
+				};
 
-				console.log(messages);
-				return messages;
+				if (cursor) {
+					opts.where.created_at = {
+						[models.sequelize.Op.lt]: cursor,
+					};
+				}
+
+				return await models.Message.findAll(opts, { raw: true });
 			}
 		),
 	},
