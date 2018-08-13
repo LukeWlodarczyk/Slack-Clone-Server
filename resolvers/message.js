@@ -58,12 +58,7 @@ export default {
 	},
 	Message: {
 		url: ({ url }) => (url ? `http://localhost:5000/${url}` : url),
-		user: async ({ userId }, args, { models }) =>
-			await models.User.findOne({
-				where: {
-					id: userId,
-				},
-			}),
+		user: async ({ userId }, args, { userLoader }) => userLoader.load(userId),
 	},
 	Mutation: {
 		createMessage: requiresAuth.createResolver(

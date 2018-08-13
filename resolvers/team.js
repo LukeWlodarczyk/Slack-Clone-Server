@@ -120,7 +120,6 @@ export default {
 						},
 					};
 				} catch (err) {
-					console.log(err);
 					return {
 						success: false,
 						errors: formatErrors(err, models),
@@ -130,19 +129,6 @@ export default {
 		),
 	},
 	Team: {
-		channels: async ({ id }, args, { models, user }) =>
-			await await models.sequelize.query(
-				`
-			select distinct on (id) *
-		from channels as c
-		left outer join pcmembers as pc
-		on c.id = pc.channel_id
-		where c.team_id = :teamId and (c.public = true or pc.user_id = :userId);`,
-				{
-					replacements: { teamId: id, userId: user.id },
-					model: models.Channel,
-					raw: true,
-				}
-			),
+		channels: async ({ id }, args, { channelLoader }) => channelLoader.load(id),
 	},
 };

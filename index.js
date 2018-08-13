@@ -5,11 +5,13 @@ import path from 'path';
 import cors from 'cors';
 import { fileLoader, mergeTypes, mergeResolvers } from 'merge-graphql-schemas';
 import { createServer } from 'http';
+import DataLoader from 'dataloader';
 
 import models from './models';
 import { secret, refreshSecret } from './config/keys';
 
 import authorizeUser, { authorizeUserWs } from './middlewares/authorizeUser';
+import { channelBatcher, userBatcher } from './helpers/batchFunctions';
 
 const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
 
@@ -31,9 +33,17 @@ const server = new ApolloServer({
 	typeDefs,
 	resolvers,
 	context: ({ req, connection }) => {
+		const loaders = {
+			channelLoader: new DataLoader(ids =>
+				channelBatcher(ids, models, req.user)
+			),
+			userLoader: new DataLoader(ids => userBatcher(ids, models)),
+		};
+
 		if (connection) {
 			return {
 				...connection.context,
+				...loaders,
 			};
 		}
 
@@ -42,6 +52,7 @@ const server = new ApolloServer({
 			user: req.user,
 			secret,
 			refreshSecret,
+			...loaders,
 		};
 	},
 	subscriptions: {
