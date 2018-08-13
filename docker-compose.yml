@@ -6,6 +6,8 @@ services:
       - webnet
   db:
     image: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
     networks:
       - webnet
     environment:
