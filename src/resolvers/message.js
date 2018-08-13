@@ -1,7 +1,6 @@
 import { formatErrors } from '../helpers/formatErrors';
 import { requiresAuth, requiresTeamAccess } from '../helpers/permissions';
 import { withFilter } from 'apollo-server-express';
-import { createWriteStream } from 'fs';
 
 import pubsub from '../helpers/pubsub';
 import { storeUpload } from '../helpers/storeUpload';

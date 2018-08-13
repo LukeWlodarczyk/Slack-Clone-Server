@@ -1,4 +1,5 @@
-const UPLOAD_ROUTE = `${__dirname}/../files`;
+import { createWriteStream } from 'fs';
+const UPLOAD_ROUTE = `${__dirname}/../../files`;
 
 export const storeUpload = ({ stream, filename }) =>
 	new Promise((resolve, reject) =>
