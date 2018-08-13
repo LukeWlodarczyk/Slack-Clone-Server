@@ -1,0 +1,27 @@
+version: "3"
+services:
+  redis:
+    image: redis
+    networks:
+      - webnet
+  db:
+    image: postgres
+    networks:
+      - webnet
+    environment:
+      POSTGRES_DB: slack
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hellopostgres
+
+  web:
+    image: slack-clone-server
+    ports:
+      - "5000:5000"
+    networks:
+      - webnet
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+    command: ["./wait-for-it.sh", "db:5432", "--", "node", "index.js"]
+networks:
+  webnet:

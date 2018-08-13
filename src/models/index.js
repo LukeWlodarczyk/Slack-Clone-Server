@@ -3,6 +3,7 @@ import Sequelize from 'sequelize';
 const sequelize = new Sequelize('slack', 'postgres', 'hellopostgres', {
 	dialect: 'postgres',
 	operatorsAliases: Sequelize.Op,
+	host: process.env.DB_HOST || 'localhost',
 	define: {
 		underscored: true,
 	},
