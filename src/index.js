@@ -52,10 +52,12 @@ const server = new ApolloServer({
 			user: req.user,
 			secret,
 			refreshSecret,
+			serverUrl: `${req.protocol}://${req.get('host')}`,
 			...loaders,
 		};
 	},
 	subscriptions: {
+		path: '/subscriptions',
 		onConnect: async (connectionParams, webSocket) => {
 			const { user } = await authorizeUserWs(
 				connectionParams,
