@@ -1,6 +1,6 @@
 FROM node:10.8.0
 
-WORKDIR /app
+WORKDIR /app/src
 COPY package-lock.json .
 COPY package.json .
 RUN npm install
