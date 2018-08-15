@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: hellopostgres
 
   web:
-    image: slack-clone-server
+    image: lukedev/slack_clone_server:latest
     networks:
       - webnet
     environment:
