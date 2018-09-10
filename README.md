@@ -10,3 +10,17 @@ Client: https://github.com/LukeWlodarczyk/Slack-Clone-Client
 - GraphQL Subscriptions
 - JsonWebToken
 - Sequelize
+
+### Installation
+
+Install the dependencies
+
+```sh
+$ npm install
+```
+
+Run app
+
+```sh
+$ npm run start
+```
