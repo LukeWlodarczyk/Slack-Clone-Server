@@ -15,6 +15,8 @@ Client: https://github.com/LukeWlodarczyk/Slack-Clone-Client
 
 Since this project is using PostgreSQL and Redis, you have to install it for your machine and get a database and redis up and running.
 
+Make sure to create 'files' directory in root.
+
 Install the dependencies
 
 ```sh
